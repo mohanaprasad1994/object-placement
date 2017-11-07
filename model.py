@@ -110,11 +110,11 @@ class encoderdecoder(object):
                 self.writer.add_summary(summary_str, counter)
                 
                 counter += 1
-                print(("Epoch: [%2d] [%4d/%4d] time: %4.4f" % (
-                    epoch, idx, batch_idxs, time.time() - start_time)))
+                print(("Epoch: [%2d] [%4d/%4d] time: %4.4f loss: %4.4f" % (
+                    epoch, idx, batch_idxs, time.time() - start_time, loss)))
 
                 if np.mod(counter, args.print_freq) == 1:
-                    self.sample_model(args.sample_dir, epoch, idx)
+                  self.sample_model(args.sample_dir, epoch, idx)
 
                 if np.mod(counter, args.save_freq) == 2:
                     self.save(args.checkpoint_dir, counter)
@@ -150,14 +150,14 @@ class encoderdecoder(object):
         dataB = glob('./datasets/{}/*.*'.format(self.dataset_dir + '/testB'))
         np.random.shuffle(dataA)
         dataB = []
-            for item in dataA:
-                dataB.append(item.replace("trainA", "trainB"))
+        for item in dataA:
+          dataB.append(item.replace("trainA", "trainB"))
         batch_files = list(zip(dataA[:self.batch_size], dataB[:self.batch_size]))
         sample_images = [load_train_data(batch_file, is_testing=True) for batch_file in batch_files]
         sample_images = np.array(sample_images).astype(np.float32)
 
         fake_B = self.sess.run(
-            [self.fake_B],
+            self.fake_B,
             feed_dict={self.real_data: sample_images}
         )
         

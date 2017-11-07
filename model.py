@@ -71,7 +71,7 @@ class encoderdecoder(object):
         """Train cyclegan"""
         self.lr = tf.placeholder(tf.float32, None, name='learning_rate')
         self.g_optim = tf.train.AdamOptimizer(self.lr, beta1=args.beta1) \
-            .minimize(self.g_loss, var_list=self.g_vars)
+            .minimize(self.loss, var_list=self.g_vars)
 
         init_op = tf.global_variables_initializer()
         self.sess.run(init_op)

@@ -46,7 +46,7 @@ def load_test_data(image_path, fine_size=256):
 
 def load_train_data(image_path, load_size=286, fine_size=256, is_testing=False):
     img_A = imread(image_path[0])
-    img_B = imread(image_path[1])
+    img_B = imread(image_path[1], is_grayscale=True)
     if not is_testing:
         img_A = scipy.misc.imresize(img_A, [load_size, load_size])
         img_B = scipy.misc.imresize(img_B, [load_size, load_size])
@@ -64,8 +64,7 @@ def load_train_data(image_path, load_size=286, fine_size=256, is_testing=False):
 
     img_A = img_A/127.5 - 1.
     img_B = img_B/127.5 - 1.
-
-    img_AB = np.concatenate((img_A, img_B), axis=2)
+    img_AB = np.concatenate((img_A, np.atleast_3d(img_B)), axis=2)
     # img_AB shape: (fine_size, fine_size, input_c_dim + output_c_dim)
     return img_AB
 
@@ -79,7 +78,7 @@ def save_images(images, size, image_path):
 
 def imread(path, is_grayscale = False):
     if (is_grayscale):
-        return scipy.misc.imread(path, flatten = True).astype(np.float)
+        return scipy.misc.imread(path, flatten=True).astype(np.float)
     else:
         return scipy.misc.imread(path, mode='RGB').astype(np.float)
 

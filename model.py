@@ -149,17 +149,18 @@ class encoderdecoder(object):
         dataA = glob('./datasets/{}/*.*'.format(self.dataset_dir + '/testA'))
         dataB = glob('./datasets/{}/*.*'.format(self.dataset_dir + '/testB'))
         np.random.shuffle(dataA)
-        np.random.shuffle(dataB)
+        dataB = []
+            for item in dataA:
+                dataB.append(item.replace("trainA", "trainB"))
         batch_files = list(zip(dataA[:self.batch_size], dataB[:self.batch_size]))
         sample_images = [load_train_data(batch_file, is_testing=True) for batch_file in batch_files]
         sample_images = np.array(sample_images).astype(np.float32)
 
-        fake_A, fake_B = self.sess.run(
-            [self.fake_A, self.fake_B],
+        fake_B = self.sess.run(
+            [self.fake_B],
             feed_dict={self.real_data: sample_images}
         )
-        save_images(fake_A, [self.batch_size, 1],
-                    './{}/A_{:02d}_{:04d}.jpg'.format(sample_dir, epoch, idx))
+        
         save_images(fake_B, [self.batch_size, 1],
                     './{}/B_{:02d}_{:04d}.jpg'.format(sample_dir, epoch, idx))
 
@@ -195,5 +196,7 @@ class encoderdecoder(object):
                 '..' + os.path.sep + sample_file)))
             index.write("<td><img src='%s'></td>" % (image_path if os.path.isabs(image_path) else (
                 '..' + os.path.sep + image_path)))
+            index.write("<td><img src='%s'></td>" % (sample_file.replace('testA', 'testB') if os.path.isabs(sample_file) else (
+                '..' + os.path.sep + sample_file.replace('testA', 'testB'))))
             index.write("</tr>")
         index.close()

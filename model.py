@@ -40,7 +40,7 @@ class encoderdecoder(object):
         self.pool = ImagePool(args.max_size)
 
     def _build_model(self):
-        self.data = tf.placeholder(tf.float32,
+        self.real_data = tf.placeholder(tf.float32,
                                         [None, self.image_size, self.image_size,
                                          self.input_c_dim + self.output_c_dim],
                                         name='real_A_and_B_images')

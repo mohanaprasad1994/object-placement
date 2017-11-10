@@ -9,6 +9,8 @@ from collections import namedtuple
 from module import *
 from utils import *
 
+# from PIL import Image, ImageFont, ImageDraw, ImageEnhance
+# from matplotlib.pyplot import imshow, subplots
 
 class encoderdecoder(object):
     def __init__(self, sess, args):
@@ -117,6 +119,15 @@ class encoderdecoder(object):
 
                 if np.mod(counter, args.save_freq) == 2:
                     self.save(args.checkpoint_dir, counter)
+                # print np.array(realB).shape
+                # fig, ax = subplots(figsize=(10, 10))
+                # print np.concatenate([np.asarray(realB[0])]*3, axis=2).shape
+                # ax.imshow(np.concatenate([np.asarray(realB[0])]*3, axis=2))
+
+                # print np.array(realA).shape
+                # fig, ax = subplots(figsize=(10, 10))
+                # ax.imshow(realA[0])
+
         return loss_list
 
     def save(self, checkpoint_dir, step):

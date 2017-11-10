@@ -17,7 +17,6 @@ class encoderdecoder(object):
         self.image_size = args.fine_size
         self.input_c_dim = args.input_nc
         self.output_c_dim = args.output_nc
-        self.L1_lambda = args.L1_lambda
         self.dataset_dir = args.dataset_dir
 
         if args.use_resnet:
@@ -50,7 +49,7 @@ class encoderdecoder(object):
 
         self.fake_B = self.generator(self.real_A, self.options, False, name="generatorA2B")
 
-        self.loss = mae_criterion(self.real_B, self.fake_B)
+        self.loss = sce_criterion(self.real_B, self.fake_B)
         
         self.loss_summ = tf.summary.scalar("loss", self.loss)
         
@@ -79,7 +78,7 @@ class encoderdecoder(object):
 
         counter = 1
         start_time = time.time()
-
+        loss_list = []
         if args.continue_train:
             if self.load(args.checkpoint_dir):
                 print(" [*] Load SUCCESS")
@@ -108,7 +107,7 @@ class encoderdecoder(object):
                     [self.loss, self.loss_summ],
                     feed_dict={self.real_data: batch_images, self.lr: lr})
                 self.writer.add_summary(summary_str, counter)
-                
+                loss_list.append(loss)
                 counter += 1
                 print(("Epoch: [%2d] [%4d/%4d] time: %4.4f loss: %4.4f" % (
                     epoch, idx, batch_idxs, time.time() - start_time, loss)))
@@ -118,6 +117,7 @@ class encoderdecoder(object):
 
                 if np.mod(counter, args.save_freq) == 2:
                     self.save(args.checkpoint_dir, counter)
+        return loss_list
 
     def save(self, checkpoint_dir, step):
         model_name = "encoderdecoder.model"

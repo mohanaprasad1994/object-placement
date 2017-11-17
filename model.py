@@ -9,8 +9,8 @@ from collections import namedtuple
 from module import *
 from utils import *
 
-# from PIL import Image, ImageFont, ImageDraw, ImageEnhance
-# from matplotlib.pyplot import imshow, subplots
+from PIL import Image, ImageFont, ImageDraw, ImageEnhance
+from matplotlib.pyplot import imshow, subplots
 
 class encoderdecoder(object):
     def __init__(self, sess, args):
@@ -51,7 +51,7 @@ class encoderdecoder(object):
 
         self.fake_B = self.generator(self.real_A, self.options, False, name="generatorA2B")
 
-        self.loss = sce_criterion(self.real_B, self.fake_B)
+        self.loss = mae_criterion(self.real_B, self.fake_B)
         
         self.loss_summ = tf.summary.scalar("loss", self.loss)
         
@@ -105,8 +105,8 @@ class encoderdecoder(object):
                 batch_images = np.array(batch_images).astype(np.float32)
 
                 # Update G network and record fake outputs
-                loss, summary_str = self.sess.run(
-                    [self.loss, self.loss_summ],
+                loss, summary_str, _ = self.sess.run(
+                    [self.loss, self.loss_summ, self.g_optim],
                     feed_dict={self.real_data: batch_images, self.lr: lr})
                 self.writer.add_summary(summary_str, counter)
                 loss_list.append(loss)
@@ -119,14 +119,23 @@ class encoderdecoder(object):
 
                 if np.mod(counter, args.save_freq) == 2:
                     self.save(args.checkpoint_dir, counter)
-                # print np.array(realB).shape
-                # fig, ax = subplots(figsize=(10, 10))
-                # print np.concatenate([np.asarray(realB[0])]*3, axis=2).shape
-                # ax.imshow(np.concatenate([np.asarray(realB[0])]*3, axis=2))
+#                 if counter% 30 == 0: 
+#                     print np.array(realB).shape
+#                     fig, ax = subplots(figsize=(10, 10))
+#                     print np.concatenate([np.asarray(realB[0])]*3, axis=2).shape
+#                     ax.imshow(np.concatenate([np.asarray(realB[0])]*3, axis=2))
 
-                # print np.array(realA).shape
-                # fig, ax = subplots(figsize=(10, 10))
-                # ax.imshow(realA[0])
+#                     print np.array(realA).shape
+#                     fig, ax = subplots(figsize=(10, 10))
+#                     ax.imshow(inverse_transform(realA[0]))
+
+#                     from scipy.special import expit
+
+#                     print np.array(fakeB).shape
+#                     fig, ax = subplots(figsize=(10, 10))
+#                     print np.concatenate([np.asarray(fakeB[0])]*3, axis=2).shape
+#                     ax.imshow(np.concatenate([expit(np.asarray(fakeB[0]))]*3, axis=2))
+
 
         return loss_list
 

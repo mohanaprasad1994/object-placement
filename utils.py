@@ -64,6 +64,13 @@ def load_train_data(image_path, load_size=286, fine_size=256, is_testing=False):
 
     img_A = img_A/127.5 - 1.
     img_B = img_B/127.5 - 1.
+#     import collections
+#     dic = collections.defaultdict(int, {})
+#     for i in range(np.shape(img_B)[0]):
+#         for j in range(np.shape(img_B)[1]):
+#             if img_B[i][j] != 0:
+#                 dic[img_B[i][j]] += 1
+#     print dic
     img_AB = np.concatenate((img_A, np.atleast_3d(img_B)), axis=2)
     # img_AB shape: (fine_size, fine_size, input_c_dim + output_c_dim)
     return img_AB
